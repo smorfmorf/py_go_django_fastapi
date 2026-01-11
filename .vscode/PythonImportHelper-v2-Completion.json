@@ -1,0 +1,28 @@
+[
+    {
+        "label": "asyncio",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "asyncio",
+        "description": "asyncio",
+        "detail": "asyncio",
+        "documentation": {}
+    },
+    {
+        "label": "ThreadPoolExecutor",
+        "importPath": "concurrent.futures",
+        "description": "concurrent.futures",
+        "isExtraImport": true,
+        "detail": "concurrent.futures",
+        "documentation": {}
+    },
+    {
+        "label": "fetch_sync",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def fetch_sync(url):\n    time.sleep(2) # синхронная блокировка!, блокирует EventLoop\n    return 'fetch_sync'\n# Асинхронная задача \nasync def async_task(n):\n    for i in range(3):\n        print(f\"Async task {n} step {i}\")\n        await asyncio.sleep(3)  # async I/O, не блокирует loop\nasync def main():\n    loop = asyncio.get_running_loop()",
+        "detail": "main",
+        "documentation": {}
+    }
+]
