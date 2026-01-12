@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"math/rand/v2"
@@ -71,7 +72,7 @@ func main() {
 		"orange": 7,
 	}
 
-	value, error:= checkList["apple2"]
+	value, error := checkList["apple2"]
 
 	if error != true {
 		pp.Println("Error:", error)
@@ -80,9 +81,6 @@ func main() {
 	}
 
 	fmt.Println(value, error)
-
-	
-	
 
 	whatAmI := func(item any) {
 		switch t := item.(type) {
@@ -104,8 +102,8 @@ func main() {
 	}()
 
 	select {
-		case msg := <-intChan:
-			fmt.Println(msg)
+	case msg := <-intChan:
+		fmt.Println(msg)
 	}
 
 	mapa := map[string]int{
@@ -119,14 +117,11 @@ func main() {
 		pp.Println("mapa", true)
 	}
 
-
-
-
 	type Message struct {
 		Name string
 	}
 	var robot = []any{}
-	// создаю новый открытый канал
+	// создаю новый открытый канал (канал нужен для передачи данных между каналами)
 	var messageChan = make(chan string)
 
 	go func() {
@@ -134,7 +129,7 @@ func main() {
 		for i := 0; i < 6; i++ {
 			messageChan <- "name" + strconv.Itoa(i)
 		}
-		// закрываем канал
+		//! закрываем канал
 		close(messageChan)
 	}()
 
@@ -142,11 +137,32 @@ func main() {
 	// v1, ok := <-messageChan
 	// fmt.Println(v1, ok)
 
-	// как только канал будет закрыт тогда автоматически цикл range transerPoint завершится и не нужно следить за ok(статусом)
+	//! как только канал будет закрыт тогда автоматически цикл range transerPoint завершится и не нужно следить за ok(статусом)
 	for mess := range messageChan {
 		robot = append(robot, mess)
 	}
 
 	pp.Println("robot", robot)
 
+	parentContext, parentCloseContext := context.WithCancel(context.Background())
+	go foo(parentContext)
+	time.Sleep(3 * time.Second)
+	// закрываем контекст (группу гоурутин)
+	parentCloseContext()
+	time.Sleep(3 * time.Second)
+}
+
+func foo(ctx context.Context) {
+	// в бесконечном цикле for будем следить отменен ли контекст или нет через select
+	for {
+		select {
+		case <-ctx.Done():
+			pp.Println("контекст удален")
+			return
+		default:
+			fmt.Println("foo")
+		}
+		time.Sleep(100 * time.Millisecond)
+
+	}
 }
