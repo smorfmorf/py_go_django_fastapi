@@ -1,5 +1,5 @@
 package greeting
 
 func SayGf() {
-	print("gf")
+	print("Import from package greeting \n")
 }

@@ -63,8 +63,6 @@ func main() {
 		fmt.Println("Оплата прошла успешно, ваш код:", val)
 	}
 
-	fmt.Println("Hello, 世界")
-
 	greeting.SayGf()
 
 	checkList := map[string]int{
@@ -73,20 +71,18 @@ func main() {
 		"orange": 7,
 	}
 
-	value, err2 := checkList["apple2"]
+	value, error:= checkList["apple2"]
 
-	if err2 != true {
-		fmt.Println("Error:", err2)
+	if error != true {
+		pp.Println("Error:", error)
 	} else {
 		fmt.Println("Success")
 	}
 
-	fmt.Println(value, err2)
+	fmt.Println(value, error)
 
-	// any
-	//var name string = "mazaka"
-	//const nix = 66.7
-	//fmt.Printf("%T\n", nix)
+	
+	
 
 	whatAmI := func(item any) {
 		switch t := item.(type) {
@@ -108,8 +104,8 @@ func main() {
 	}()
 
 	select {
-	case msg := <-intChan:
-		fmt.Println(msg)
+		case msg := <-intChan:
+			fmt.Println(msg)
 	}
 
 	mapa := map[string]int{
@@ -123,22 +119,15 @@ func main() {
 		pp.Println("mapa", true)
 	}
 
-	var ch = make(chan string)
 
-	go func() {
-		ch <- "hello"
-	}()
-	var vvv = <-ch
-	fmt.Println(vvv)
+
 
 	type Message struct {
 		Name string
 	}
-
 	var robot = []any{}
-
 	// создаю новый открытый канал
-	messageChan := make(chan string)
+	var messageChan = make(chan string)
 
 	go func() {
 		time.Sleep(3 * time.Second)
@@ -153,6 +142,7 @@ func main() {
 	// v1, ok := <-messageChan
 	// fmt.Println(v1, ok)
 
+	// как только канал будет закрыт тогда автоматически цикл range transerPoint завершится и не нужно следить за ok(статусом)
 	for mess := range messageChan {
 		robot = append(robot, mess)
 	}
