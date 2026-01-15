@@ -7,6 +7,7 @@ import (
 	"math/rand/v2"
 	"strconv"
 	"study/greeting"
+	"sync"
 	"time"
 
 	"github.com/k0kubun/pp"
@@ -150,6 +151,32 @@ func main() {
 	// закрываем контекст (группу гоурутин)
 	parentCloseContext()
 	time.Sleep(3 * time.Second)
+
+// ------------------------------------------------------ WaitGroup
+
+//берем указатель на WaitGroup (она как каналы под капотом сама не делает указатель на себя)
+wg := &sync.WaitGroup{}
+
+wg.Add(2) //? обязательно(счетчик) - говорим щас запущу 2 горутину
+ postman("новости", wg)
+ postman("Auto", wg)
+ postman("Sport", wg)
+
+//? блокируемся на вызове пока счетчик не станет 0
+wg.Wait()
+
+pp.Print("test")
+
+}
+
+func postman(text string, wg *sync.WaitGroup) {
+	defer wg.Done() //? Важно (счетчик) каждый раз уменьшает на 1
+// когда func запущеная в горутине завершится, всегда в конце вызывается defer
+	for i:=1; i<= 3; i++{
+		pp.Println("Я понес газету", text, i)
+		time.Sleep(250 * time.Millisecond)
+	}
+
 }
 
 func foo(ctx context.Context) {
@@ -165,4 +192,5 @@ func foo(ctx context.Context) {
 		time.Sleep(100 * time.Millisecond)
 
 	}
+
 }
