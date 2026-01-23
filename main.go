@@ -122,6 +122,9 @@ func main() {
 		Name string
 	}
 	var robot = []any{}
+
+
+	//! Закрытие каналов. Аксиомы каналов.
 	// создаю новый открытый канал (канал нужен для передачи данных между каналами)
 	var messageChan = make(chan string)
 
@@ -142,8 +145,10 @@ func main() {
 	for mess := range messageChan {
 		robot = append(robot, mess)
 	}
-
 	pp.Println("robot", robot)
+
+	//*1) Context -----------------------------------------
+	// можем отдельно контролировать выполнение каких-то узлов нашей программы (те засунуть в контекст группу go-рутин и когда нам нужно завершить их закрываем контекст)
 
 	parentContext, parentCloseContext := context.WithCancel(context.Background())
 	go foo(parentContext)
@@ -152,61 +157,108 @@ func main() {
 	parentCloseContext()
 	time.Sleep(3 * time.Second)
 
-//! -------------------------------------инструмент синхронизации WaitGroup
-// ждем пока все горутины завершатся, и потом выполняем код в Main
-// а через каналы синхронизация происходит когда рутина отдает какие-то данные!
+	//!2) инструмент синхронизации WaitGroup -------------------------------------
+	// ждем пока все горутины завершатся, и потом выполняем код в Main
+	// а через каналы синхронизация происходит когда рутина отдает какие-то данные!
 
-//берем указатель на WaitGroup (она как каналы под капотом сама не делает указатель на себя)
-wg := &sync.WaitGroup{}
+	//? берем указатель на WaitGroup (она как каналы под капотом сама не делает указатель на себя)
+	wg := &sync.WaitGroup{}
 
-wg.Add(3) //? обязательно(счетчик) - говорим щас запущу 2 горутину
- postman_WaitGrop("новости", wg)
- postman_WaitGrop("Auto", wg)
- postman_WaitGrop("Sport", wg)
+	wg.Add(3) //? обязательно(счетчик) - говорим щас запущу 2 горутину
+	postman_WaitGrop("новости", wg)
+	postman_WaitGrop("Auto", wg)
+	postman_WaitGrop("Sport", wg)
 
-//? блокируемся на вызове пока счетчик не станет 0
-wg.Wait()
-pp.Print("test")
-//! -------------------------------------
+	//? блокируемся на вызове пока счетчик не станет 0
+	wg.Wait()
+	pp.Print("test")
+	//! -------------------------------------
 
-//* ------------------------------------- состояние гонки атомики, мьютексы 
-// Если есть какой-то конкурентный доступ к какой-то переменной его нужно облакдывать Mutex чтобы не происходила состояние гонки
-wg.Add(3)
-go inc_Mutex(wg)
-go inc_Mutex(wg)
-go inc_Mutex(wg)
+	//*3) состояние гонки атомики, Mutex -------------------------------------
+	// Если есть какой-то конкурентный доступ к какой-то переменной его нужно облакдывать Mutex чтобы не происходила состояние гонки
+	wg.Add(3)
 
-wg.Wait()
+	go inc_Mutex(wg)
+	go inc_Mutex(wg)
+	go inc_Mutex(wg)
 
-pp.Println("number", number)
+	wg.Wait()
 
-//* -------------------------------------
+	pp.Println("number", number)
+
+	//* -------------------------------------
+
+
+	//*4) состояние гонки RWMutex -------------------------------------
+	wg.Add(1)
+	go setLike(wg)
+
+	for i:=1; i<=3; i++{
+		wg.Add(1)
+		go getLike(wg, "1")
+		wg.Add(1)
+		go getLike(wg , "2")
+		wg.Add(1)
+		go getLike(wg , "3")
+	}
+
+	wg.Wait()
+
+	fmt.Println("likes", likes)
+
+	//* -------------------------------------
 
 }
 
-var number int = 0 
+var number int = 0
 var mutex = sync.Mutex{}
 
-func inc_Mutex(wg *sync.WaitGroup){
+func inc_Mutex(wg *sync.WaitGroup) {
 	defer wg.Done()
-		for i := 1; i <= 10000; i++ {
-			// тут как бы мы ставим блокировку гарантируя, что только одна go изменяет number
-			mutex.Lock()
-			number += 1
-			mutex.Unlock()
-		}
+	for i := 1; i <= 10000; i++ {
+		// тут как бы мы ставим блокировку гарантируя, что только одна go изменяет number
+		mutex.Lock()
+		number += 1
+		mutex.Unlock()
+	}
 }
 
 
+var likes int = 0
+var mtx sync.RWMutex
+
+
+func setLike(wg *sync.WaitGroup){
+	defer wg.Done()
+
+	for i:=1; i<=100; i++{
+//! только 1 Go-рутина может щас выполнять этот код
+		mtx.Lock()
+		pp.Println( "likes", likes,"setLike ++", i)
+		likes++
+		mtx.Unlock()
+//! Go планировщик решает, какая горутина следующей возьмёт мьютекс.
+	}
+}
+func getLike(wg *sync.WaitGroup, name string){
+	defer wg.Done()
+
+	for i:=1; i<=100; i++{
+		mtx.RLock()
+	    pp.Println("я взял выполнение мьютекса", name, likes)
+		// _=likes
+		mtx.RUnlock()
+	}
+}
+ 
 func postman_WaitGrop(text string, wg *sync.WaitGroup) {
 	defer wg.Done() //? Важно (счетчик) каждый раз уменьшает на 1
-// когда func запущеная в горутине завершится, всегда в конце вызывается defer
-	for i:=1; i<= 3; i++{
+	// когда func запущеная в горутине завершится, всегда в конце вызывается defer
+	for i := 1; i <= 3; i++ {
 		pp.Println("Я понес газету", text, i)
 		time.Sleep(250 * time.Millisecond)
 	}
 }
-
 
 func foo(ctx context.Context) {
 	// в бесконечном цикле for будем следить отменен ли контекст или нет через select

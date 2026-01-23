@@ -246,22 +246,65 @@ async def main():
 
 # asyncio.run(main())
 
-import aiohttp
 
-async def getData(i:int, endpoint:str):
-    print(f"Начал выполнение {i}")
-    url = f"http://localhost:8000/{endpoint}/{i}"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as res:
-            print(f"Закончил выполнение {i}")
+# from concurrent.futures import ThreadPoolExecutor
 
-async def main2():
-    # выполнить все задачи одновременно
-    await asyncio.gather(*[getData(i, "sync") for i in range(300)])
+# count = 0
 
-asyncio.run(main2())
+# def blocking_read():
+#     for i in range(10_000_000):
+#         count += 1
+#     return count
 
+# with ThreadPoolExecutor(max_workers=2) as executor:
+#     future = executor.submit(blocking_read)  # сразу создаёт поток
+#     print(future.result())  # ждем результат
 
 
-    #! Создаём задачу, она начнёт выполняться в фоне
-    # task = asyncio.create_task(my_task(1))
+
+
+
+import asyncio
+
+async def blocking_read_async(name):
+    print(f"{name} start")
+    #! задачу в Ядро-ОС не блокирует поток, CPU-заблокирует
+    await asyncio.sleep(10)
+    print(f"{name} end")
+
+
+count = 0
+def blocking_read(name):
+    #? эти задачи выполнятся паралельно,
+    #? каждые 5-мсек GIL переключает потоки 
+    # global count
+    # for i in range(100_000):
+    #     print(f'{name} start')
+    #     count += 1
+    # return count
+    print(f"{name} start")
+    #* имитация Bound-IO в Ядро-ос
+    time.sleep(10) 
+    print(f"{name} end")
+
+async def main():
+    print(666) 
+    #! типо Promise - сразу начинает выполнять задачу (если CPU, то блокирует поток) 
+    asyncio.create_task(blocking_read_async("third!!!!"))
+
+# • НЕ создаёт новый thread вручную
+# • Отправляет функцию в пул потоков
+#* 👉 Это официальный способ запускать блокирующий код внутри asyncio
+# тут как в js-await ждет пока выполнится. 
+    # data = await asyncio.to_thread(blocking_read, 'first')
+    # data = await asyncio.to_thread(blocking_read, 'second')
+
+    data1 = asyncio.to_thread(blocking_read, "first")
+    data2 = asyncio.to_thread(blocking_read, "second ###########")
+    
+    #?👉 Promise.all выполнение всех задач паралельно 
+    await asyncio.gather(data1, data2)
+
+asyncio.run(main())
+
+
