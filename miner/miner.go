@@ -10,9 +10,9 @@ import (
 )
 
 func Miner(
-	ctx context.Context,
-	wg *sync.WaitGroup,
-	transferPoint chan <- int, //send only
+	ctx context.Context, //context
+	wg *sync.WaitGroup,  // await 
+	transferPoint chan <- int, //send only (только писать)
 	n int,
 	power int,
 ){
@@ -21,7 +21,7 @@ func Miner(
 	for {
 		select{
 			case <-ctx.Done():
-				pp.Println("Я шахтёр номер", n, "закончил работу")
+				pp.Println("-------> Я шахтёр номер", n, "закончил работу")
 				return 
 			default:
 				pp.Println("Я шахтёр номер", n, "начал добывать уголь")
@@ -33,7 +33,7 @@ func Miner(
 	}
 }
 
-// пункт передачи 
+// пункт передачи  хотим только читать <-
 func MinerPool(ctx context.Context, minerCount int) <-chan int{
 	coalTransferPoint := make(chan int) // пункт передачи 
 	wg := &sync.WaitGroup{} // чтобы подождать всех Mineroв
@@ -44,11 +44,14 @@ func MinerPool(ctx context.Context, minerCount int) <-chan int{
 	}
 
 	// в отдельном потоке запускаем ожидание окончания Mineroв
+	// чтобы не блокировать канал для передачи угля
 	go func(){
 		wg.Wait()
-		fmt.Println("test check")
+		fmt.Println("end miner await")
 		close(coalTransferPoint) //закрываем канал
 	}()
 
+
+	// канал передачи угля
 	return coalTransferPoint
 }

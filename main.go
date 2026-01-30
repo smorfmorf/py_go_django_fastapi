@@ -278,41 +278,77 @@ import (
 	"context"
 	"fmt"
 	"study/miner"
+	"sync"
 	"time"
 
 	"github.com/k0kubun/pp"
 )
 func main(){
+	// -race детект состояние гонки
 var resCoal int
 minerCotext, minecrCancel := context.WithCancel(context.Background())
 coalTransferPoint := miner.MinerPool(minerCotext, 1)
 
+var mtx = sync.Mutex{}
+var wg = &sync.WaitGroup{}
 
 go func(){
 	time.Sleep(3 * time.Second)
 	minecrCancel()
 }()
 
-for val:= range coalTransferPoint {
+wg.Add(1)
+go func(){
+	defer wg.Done()
+
+	for val:= range coalTransferPoint {
 	pp.Println("Количество угля в складе", val)
+	mtx.Lock()
+	fmt.Println("lock ->>>")
+	time.Sleep(5 * time.Second)
+	resCoal += val
+	mtx.Unlock()	
 }
+}()
 
-var isCoalClose bool = false
+wg.Add(1)
+go func(){
+	defer wg.Done()
 
-for !isCoalClose{
-	select{
-	case coal, ok := <-coalTransferPoint:
-	if !ok {
-		isCoalClose = true
-		pp.Println("Уголь закончился")
-	}
-	resCoal += coal
-
-	}
-
+	for val:= range coalTransferPoint {
+	pp.Println("Количество угля в складе", val)
+	mtx.Lock()
+	fmt.Println("lock 2 ->>>")
+	time.Sleep(5 * time.Second)
+	resCoal += val
+	mtx.Unlock()	
 }
+}()
+
+go func(){
+	for{
+	time.Sleep(1 * time.Second)
+	fmt.Println("read: ->>>", resCoal)
+	}
+}()
+
+wg.Wait()
+
+// var isCoalClose bool = false
+
+// for !isCoalClose{
+// 	select{
+// 	case coal, ok := <-coalTransferPoint:
+// 	if !ok {
+// 		isCoalClose = true
+// 		pp.Println("Уголь закончился")
+// 	}
+// 	resCoal += coal
+
+// 	}
+// }
 
 
-
+minecrCancel()
 fmt.Println("Общее количество угля", resCoal)
 }

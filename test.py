@@ -180,53 +180,66 @@ print('--- ThreadPoolExecutor ---')
 #     result = ex.submit(hash_pw).result()
 #     print(result.hex())
 
-print(123)
-
-
-
 
 import asyncio
 import time
 from concurrent.futures import ThreadPoolExecutor
 
-# Блокирующая функция (CPU/I/O синхронная)
-def blocking_io():
-    print("Start blocking_io")
-    time.sleep(5)  # имитация синхронного I/O
+#! Блокирующая функция (CPU/I/O синхронная)
+def blocking_io(name):
+    i = 0
+    print("Start ------- blocking_io")
+    for i in range(100):
+        i += 1
+        print(i, '---', name)
+    # time.sleep(5)  # имитация синхронного I/O
     print("End blocking_io")
     return "blocking result"
 
-# Асинхронная неблокирующая функция
-async def unblocking_io():
-    print("Start unblocking_io")
-    await asyncio.sleep(1)  # настоящая async пауза
+#* Асинхронная неблокирующая функция
+async def un_blocking_io():
+    print("Start >>>>>>>>>>>> unblocking_io")
+    await asyncio.sleep(2)  # настоящая async пауза
     print("End unblocking_io")
     return "unblocking result"
 
+
 async def main():
     loop = asyncio.get_running_loop()
-    # Создаём executor (ThreadPool)
-    executor = ThreadPoolExecutor()
-
+    executor = ThreadPoolExecutor() # Создаём  пул.потоков
     # gather принимает *awaitable*, await внутри gather не нужен
     # result = await loop.run_in_executor(executor, blocking_io)
-    # print("Got:", result)
     # result2 = await unblocking_io()
-    # print("Got:", result2)
+    
+#!1 Task сразу попадает в очередь Event Loop
+    task = asyncio.create_task(un_blocking_io())
 
+#!2 ждем выполнение задач
     results = await asyncio.gather(
-        loop.run_in_executor(executor, blocking_io),
-        unblocking_io() 
+         # запуск задачи в отдельном потоке
+        loop.run_in_executor(executor, blocking_io, 'first ++++'),
+        loop.run_in_executor(executor, blocking_io, 'second !!!'),
+
+        un_blocking_io() 
     )
-    print("Results:", results)
+asyncio.run(main()) # Запускаем цикл событий
 
-#! asyncio.run(main())
-# Главный поток (Event Loop) не ждёт. Он ставит blocking_io в ThreadPool.
-# Новый поток ОС выполняет blocking_io → блокируется только этот поток, GIL занят там, но Event Loop свободен.
-# После 5 секунд поток возвращает результат, Event Loop его обрабатывает.
 
-# CPU-bound код не ускоряется на потоках из-за GIL
-# Но Event Loop живёт: может обрабатывать I/O задачи в параллель
+# create_task - задание на выполнение ее не нужно await 
+# gather для запуска одновременно нескольких асинхронных функций и ждет их результат
+# await 🚀 (для вызова  асинхронной функции-корутины)
+# ---------------------------------------------------------------------------------------
+# - CPU-bound код не ускоряется на потоках из-за GIL (переключение потоков каждые 5мсек)
+# - Для CPU-задач лучше использовать ProcessPool-Executor
+# - Но Event Loop: может обрабатывать I/O задачи(сеть и тд) в параллель
+
+
+
+
+
+
+
+
 
 
 print(123)
