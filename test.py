@@ -206,29 +206,24 @@ async def un_blocking_io():
 
 async def main():
     loop = asyncio.get_running_loop()
-    executor = ThreadPoolExecutor() # Создаём  пул.потоков
-    # gather принимает *awaitable*, await внутри gather не нужен
-    # result = await loop.run_in_executor(executor, blocking_io)
-    # result2 = await unblocking_io()
-    
-#!1 Task сразу попадает в очередь Event Loop
+        executor = ThreadPoolExecutor() # Создаём  пул.потоков
+    # Task сразу попадает в очередь Event Loop
     task = asyncio.create_task(un_blocking_io())
 
-#!2 ждем выполнение задач
+# ждем выполнение задач
     results = await asyncio.gather(
          # запуск задачи в отдельном потоке
-        loop.run_in_executor(executor, blocking_io, 'first ++++'),
-        loop.run_in_executor(executor, blocking_io, 'second !!!'),
+        loop.run_in_executor(executor, blocking_io, 'first +++++++++++++'),
+        loop.run_in_executor(executor, blocking_io, 'second !!!!!!!!!!!!'),
 
         un_blocking_io() 
     )
-asyncio.run(main()) # Запускаем цикл событий
-
 
 # create_task - задание на выполнение ее не нужно await 
 # gather для запуска одновременно нескольких асинхронных функций и ждет их результат
 # await 🚀 (для вызова  асинхронной функции-корутины)
 # ---------------------------------------------------------------------------------------
+
 # - CPU-bound код не ускоряется на потоках из-за GIL (переключение потоков каждые 5мсек)
 # - Для CPU-задач лучше использовать ProcessPool-Executor
 # - Но Event Loop: может обрабатывать I/O задачи(сеть и тд) в параллель
@@ -237,12 +232,16 @@ asyncio.run(main()) # Запускаем цикл событий
 
 
 
+asyncio.run(main()) # Запускаем цикл событий
 
 
 
 
 
-print(123)
+
+
+
+
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
