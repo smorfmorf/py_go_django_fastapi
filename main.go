@@ -303,23 +303,10 @@ go func(){
 
 	for val:= range coalTransferPoint {
 	pp.Println("Количество угля в складе", val)
+
+	// состояние гонки (Блокируем для 1 go-рутины)
 	mtx.Lock()
 	fmt.Println("lock ->>>")
-	time.Sleep(5 * time.Second)
-	resCoal += val
-	mtx.Unlock()	
-}
-}()
-
-wg.Add(1)
-go func(){
-	defer wg.Done()
-
-	for val:= range coalTransferPoint {
-	pp.Println("Количество угля в складе", val)
-	mtx.Lock()
-	fmt.Println("lock 2 ->>>")
-	time.Sleep(5 * time.Second)
 	resCoal += val
 	mtx.Unlock()	
 }
