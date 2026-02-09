@@ -48,10 +48,11 @@ def get_hotels(
 @router.post('')
 # body - ждет ключ значение изза embed
 def create_hotel(hotel: Hotel = Body(
-    openapi_examples={"1": {"value": {"name": "Отель 666Sik"}}, 
-                      "2": {"value": {"name": "Отель 777Sik"}}} 
-                      ),
-    ):
+    openapi_examples={
+    "1": {"value": {"name": "Отель 666Sik"}}, 
+    "2": {"value": {"name": "Отель 777Sik"}}
+    })):
+    
     global hotels
     hotels.append({
         "id": len(hotels) + 1,
