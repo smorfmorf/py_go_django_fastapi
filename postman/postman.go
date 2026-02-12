@@ -29,13 +29,13 @@ func Postman(wg *sync.WaitGroup, ctx context.Context,transferPoint chan<- string
 	}
 }
 
-func PostmanPool(ctx context.Context,postmanNumber int, mail string) <-chan string {
+func PostmanPool(ctx context.Context, postmanNumber int) <-chan string {
 	mailTransferPoint := make(chan string)
 	wg := &sync.WaitGroup{}
 
 	for i := 1; i <= postmanNumber; i++ {
 		wg.Add(1)
-		go Postman(wg, ctx, mailTransferPoint, i, mailSend(postmanNumber))
+		go Postman(wg, ctx, mailTransferPoint, i, mailSend(i))
 	}
 
 	go func(){

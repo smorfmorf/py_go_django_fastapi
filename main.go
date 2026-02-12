@@ -1,276 +1,276 @@
-// package main
+// // package main
 
-// import (
-// 	"context"
-// 	"errors"
-// 	"fmt"
-// 	"math/rand/v2"
-// 	"strconv"
-// 	"study/greeting"
-// 	"sync"
-// 	"time"
+// // import (
+// // 	"context"
+// // 	"errors"
+// // 	"fmt"
+// // 	"math/rand/v2"
+// // 	"strconv"
+// // 	"study/greeting"
+// // 	"sync"
+// // 	"time"
 
-// 	"github.com/k0kubun/pp"
-// )
+// // 	"github.com/k0kubun/pp"
+// // )
 
-// type Person struct {
-// 	Name   string
-// 	Age    int
-// 	Blance int
-// }
+// // type Person struct {
+// // 	Name   string
+// // 	Age    int
+// // 	Blance int
+// // }
 
-// func (p Person) GetName() string {
-// 	return p.Name
-// }
+// // func (p Person) GetName() string {
+// // 	return p.Name
+// // }
 
-// // 2 указателя под капотом на тип объекта и сам объект
-// type User interface {
-// 	GetName() string
-// }
+// // // 2 указателя под капотом на тип объекта и сам объект
+// // type User interface {
+// // 	GetName() string
+// // }
 
-// func CheckUser(u User) {
-// 	fmt.Printf(`функция которая принимает интерфейс User %v`, u.GetName(), "\n")
-// 	fmt.Println("User Name:", u.GetName())
-// }
+// // func CheckUser(u User) {
+// // 	fmt.Printf(`функция которая принимает интерфейс User %v`, u.GetName(), "\n")
+// // 	fmt.Println("User Name:", u.GetName())
+// // }
 
-// func Pay(user *Person, usd int) (int, error) {
-// 	random := rand.IntN(100)
-// 	pp.Println(random)
-// 	if user.Blance-usd < 0 {
-// 		return 0, errors.New("Недостаточно средств!")
-// 	}
+// // func Pay(user *Person, usd int) (int, error) {
+// // 	random := rand.IntN(100)
+// // 	pp.Println(random)
+// // 	if user.Blance-usd < 0 {
+// // 		return 0, errors.New("Недостаточно средств!")
+// // 	}
 
-// 	return random, nil
-// }
+// // 	return random, nil
+// // }
 
-// func main() {
+// // func main() {
 
-// 	defer func() {
-// 		panic := recover()
+// // 	defer func() {
+// // 		panic := recover()
 
-// 		if panic != nil {
-// 			fmt.Println("Произошла ошибка:", panic)
-// 		}
-// 	}()
+// // 		if panic != nil {
+// // 			fmt.Println("Произошла ошибка:", panic)
+// // 		}
+// // 	}()
 
-// 	var person = Person{
-// 		Name:   "Alice",
-// 		Age:    30,
-// 		Blance: 300,
-// 	}
-// 	val, err := Pay(&person, 100)
-// 	if err != nil {
-// 		fmt.Println("Ошибка при оплате:", err)
-// 	} else {
-// 		fmt.Println("Оплата прошла успешно, ваш код:", val)
-// 	}
+// // 	var person = Person{
+// // 		Name:   "Alice",
+// // 		Age:    30,
+// // 		Blance: 300,
+// // 	}
+// // 	val, err := Pay(&person, 100)
+// // 	if err != nil {
+// // 		fmt.Println("Ошибка при оплате:", err)
+// // 	} else {
+// // 		fmt.Println("Оплата прошла успешно, ваш код:", val)
+// // 	}
 
-// 	greeting.SayGf()
+// // 	greeting.SayGf()
 
-// 	checkList := map[string]int{
-// 		"apple":  5,
-// 		"banana": 10,
-// 		"orange": 7,
-// 	}
+// // 	checkList := map[string]int{
+// // 		"apple":  5,
+// // 		"banana": 10,
+// // 		"orange": 7,
+// // 	}
 
-// 	value, error := checkList["apple2"]
+// // 	value, error := checkList["apple2"]
 
-// 	if error != true {
-// 		pp.Println("Error:", error)
-// 	} else {
-// 		fmt.Println("Success")
-// 	}
+// // 	if error != true {
+// // 		pp.Println("Error:", error)
+// // 	} else {
+// // 		fmt.Println("Success")
+// // 	}
 
-// 	fmt.Println(value, error)
+// // 	fmt.Println(value, error)
 
-// 	whatAmI := func(item any) {
-// 		switch t := item.(type) {
-// 		case bool:
-// 			fmt.Println("I'm a bool")
-// 		case int:
-// 			fmt.Println("I'm an int")
-// 		default:
-// 			fmt.Printf("Don't know type %T\n", t)
-// 		}
-// 	}
-// 	whatAmI(true)
-// 	whatAmI("hey")
+// // 	whatAmI := func(item any) {
+// // 		switch t := item.(type) {
+// // 		case bool:
+// // 			fmt.Println("I'm a bool")
+// // 		case int:
+// // 			fmt.Println("I'm an int")
+// // 		default:
+// // 			fmt.Printf("Don't know type %T\n", t)
+// // 		}
+// // 	}
+// // 	whatAmI(true)
+// // 	whatAmI("hey")
 
-// 	intChan := make(chan int)
+// // 	intChan := make(chan int)
 
-// 	go func() {
-// 		intChan <- 666
-// 	}()
+// // 	go func() {
+// // 		intChan <- 666
+// // 	}()
 
-// 	select {
-// 	case msg := <-intChan:
-// 		fmt.Println(msg)
-// 	}
+// // 	select {
+// // 	case msg := <-intChan:
+// // 		fmt.Println(msg)
+// // 	}
 
-// 	mapa := map[string]int{
-// 		"dd": 21,
-// 		"ff": 22,
-// 	}
-// 	mapa["x"] = 2
-// 	val, ok := mapa["yy"]
-// 	if ok != true {
-// 		fmt.Println("Error:", ok)
-// 		pp.Println("mapa", true)
-// 	}
+// // 	mapa := map[string]int{
+// // 		"dd": 21,
+// // 		"ff": 22,
+// // 	}
+// // 	mapa["x"] = 2
+// // 	val, ok := mapa["yy"]
+// // 	if ok != true {
+// // 		fmt.Println("Error:", ok)
+// // 		pp.Println("mapa", true)
+// // 	}
 
-// 	type Message struct {
-// 		Name string
-// 	}
-// 	var robot = []any{}
+// // 	type Message struct {
+// // 		Name string
+// // 	}
+// // 	var robot = []any{}
 
-// 	//! Закрытие каналов. Аксиомы каналов.
-// 	// создаю новый открытый канал (канал нужен для передачи данных между каналами)
-// 	var messageChan = make(chan string)
+// // 	//! Закрытие каналов. Аксиомы каналов.
+// // 	// создаю новый открытый канал (канал нужен для передачи данных между каналами)
+// // 	var messageChan = make(chan string)
 
-// 	go func() {
-// 		time.Sleep(3 * time.Second)
-// 		for i := 0; i < 6; i++ {
-// 			messageChan <- "name" + strconv.Itoa(i)
-// 		}
-// 		//! закрываем канал
-// 		close(messageChan)
-// 	}()
+// // 	go func() {
+// // 		time.Sleep(3 * time.Second)
+// // 		for i := 0; i < 6; i++ {
+// // 			messageChan <- "name" + strconv.Itoa(i)
+// // 		}
+// // 		//! закрываем канал
+// // 		close(messageChan)
+// // 	}()
 
-// 	// // блокируем поток и ждем значение от канала
-// 	// v1, ok := <-messageChan
-// 	// fmt.Println(v1, ok)
+// // 	// // блокируем поток и ждем значение от канала
+// // 	// v1, ok := <-messageChan
+// // 	// fmt.Println(v1, ok)
 
-// 	//! как только канал будет закрыт тогда автоматически цикл range transerPoint завершится и не нужно следить за ok(статусом)
-// 	for mess := range messageChan {
-// 		robot = append(robot, mess)
-// 	}
-// 	pp.Println("robot", robot)
+// // 	//! как только канал будет закрыт тогда автоматически цикл range transerPoint завершится и не нужно следить за ok(статусом)
+// // 	for mess := range messageChan {
+// // 		robot = append(robot, mess)
+// // 	}
+// // 	pp.Println("robot", robot)
 
-// 	//*1) Context -----------------------------------------
-// 	// можем отдельно контролировать выполнение каких-то узлов нашей программы (те засунуть в контекст группу go-рутин и когда нам нужно завершить их закрываем контекст)
+// // 	//*1) Context -----------------------------------------
+// // 	// можем отдельно контролировать выполнение каких-то узлов нашей программы (те засунуть в контекст группу go-рутин и когда нам нужно завершить их закрываем контекст)
 
-// 	parentContext, parentCloseContext := context.WithCancel(context.Background())
-// 	go foo(parentContext)
-// 	time.Sleep(3 * time.Second)
-// 	// закрываем контекст (группу гоурутин)
-// 	parentCloseContext()
-// 	time.Sleep(3 * time.Second)
+// // 	parentContext, parentCloseContext := context.WithCancel(context.Background())
+// // 	go foo(parentContext)
+// // 	time.Sleep(3 * time.Second)
+// // 	// закрываем контекст (группу гоурутин)
+// // 	parentCloseContext()
+// // 	time.Sleep(3 * time.Second)
 
-// 	//!2) инструмент синхронизации WaitGroup -------------------------------------(дождаться окончания выполнения)
-// 	// ждем пока все горутины завершатся, и потом выполняем код в Main
-// 	// а через каналы синхронизация происходит когда рутина отдает какие-то данные!
+// // 	//!2) инструмент синхронизации WaitGroup -------------------------------------(дождаться окончания выполнения)
+// // 	// ждем пока все горутины завершатся, и потом выполняем код в Main
+// // 	// а через каналы синхронизация происходит когда рутина отдает какие-то данные!
 
-// 	//? берем указатель на WaitGroup (она как каналы под капотом сама не делает указатель на себя)
-// 	wg := &sync.WaitGroup{}
+// // 	//? берем указатель на WaitGroup (она как каналы под капотом сама не делает указатель на себя)
+// // 	wg := &sync.WaitGroup{}
 
-// 	wg.Add(3) //? обязательно(счетчик) - говорим щас запущу 2 горутину
-// 	postman_WaitGrop("новости", wg)
-// 	postman_WaitGrop("Auto", wg)
-// 	postman_WaitGrop("Sport", wg)
+// // 	wg.Add(3) //? обязательно(счетчик) - говорим щас запущу 2 горутину
+// // 	postman_WaitGrop("новости", wg)
+// // 	postman_WaitGrop("Auto", wg)
+// // 	postman_WaitGrop("Sport", wg)
 
-// 	//? блокируемся на вызове пока счетчик не станет 0
-// 	wg.Wait()
-// 	pp.Print("test")
-// 	//! -------------------------------------
+// // 	//? блокируемся на вызове пока счетчик не станет 0
+// // 	wg.Wait()
+// // 	pp.Print("test")
+// // 	//! -------------------------------------
 
-// 	//*3) состояние гонки атомики, Mutex -------------------------------------
-// 	// Если есть какой-то конкурентный доступ к какой-то переменной его нужно облакдывать Mutex чтобы не происходила состояние гонки
-// 	wg.Add(3)
+// // 	//*3) состояние гонки атомики, Mutex -------------------------------------
+// // 	// Если есть какой-то конкурентный доступ к какой-то переменной его нужно облакдывать Mutex чтобы не происходила состояние гонки
+// // 	wg.Add(3)
 
-// 	go inc_Mutex(wg)
-// 	go inc_Mutex(wg)
-// 	go inc_Mutex(wg)
+// // 	go inc_Mutex(wg)
+// // 	go inc_Mutex(wg)
+// // 	go inc_Mutex(wg)
 
-// 	wg.Wait()
+// // 	wg.Wait()
 
-// 	pp.Println("number", number)
+// // 	pp.Println("number", number)
 
-// 	//* -------------------------------------
+// // 	//* -------------------------------------
 
-// 	//*4) состояние гонки RWMutex -------------------------------------
-// 	wg.Add(1)
-// 	go setLike(wg)
+// // 	//*4) состояние гонки RWMutex -------------------------------------
+// // 	wg.Add(1)
+// // 	go setLike(wg)
 
-// 	for i:=1; i<=3; i++{
-// 		wg.Add(1)
-// 		go getLike(wg, "1")
-// 		wg.Add(1)
-// 		go getLike(wg , "2")
-// 		wg.Add(1)
-// 		go getLike(wg , "3")
-// 	}
+// // 	for i:=1; i<=3; i++{
+// // 		wg.Add(1)
+// // 		go getLike(wg, "1")
+// // 		wg.Add(1)
+// // 		go getLike(wg , "2")
+// // 		wg.Add(1)
+// // 		go getLike(wg , "3")
+// // 	}
 
-// 	wg.Wait()
+// // 	wg.Wait()
 
-// 	fmt.Println("likes", likes)
+// // 	fmt.Println("likes", likes)
 
-// 	//* -------------------------------------
+// // 	//* -------------------------------------
 
-// }
+// // }
 
-// var number int = 0
-// var mutex = sync.Mutex{}
+// // var number int = 0
+// // var mutex = sync.Mutex{}
 
-// func inc_Mutex(wg *sync.WaitGroup) {
-// 	defer wg.Done()
-// 	for i := 1; i <= 10000; i++ {
-// 		// тут как бы мы ставим блокировку гарантируя, что только одна go изменяет number
-// 		mutex.Lock()
-// 		number += 1
-// 		mutex.Unlock()
-// 	}
-// }
+// // func inc_Mutex(wg *sync.WaitGroup) {
+// // 	defer wg.Done()
+// // 	for i := 1; i <= 10000; i++ {
+// // 		// тут как бы мы ставим блокировку гарантируя, что только одна go изменяет number
+// // 		mutex.Lock()
+// // 		number += 1
+// // 		mutex.Unlock()
+// // 	}
+// // }
 
-// var likes int = 0
-// var mtx sync.RWMutex
+// // var likes int = 0
+// // var mtx sync.RWMutex
 
-// func setLike(wg *sync.WaitGroup){
-// 	defer wg.Done()
+// // func setLike(wg *sync.WaitGroup){
+// // 	defer wg.Done()
 
-// 	for i:=1; i<=100; i++{
-// //! только 1 Go-рутина может щас выполнять этот код
-// 		mtx.Lock()
-// 		pp.Println( "likes", likes,"setLike ++", i)
-// 		likes++
-// 		mtx.Unlock()
-// //! Go планировщик решает, какая горутина следующей возьмёт мьютекс.
-// 	}
-// }
-// func getLike(wg *sync.WaitGroup, name string){
-// 	defer wg.Done()
+// // 	for i:=1; i<=100; i++{
+// // //! только 1 Go-рутина может щас выполнять этот код
+// // 		mtx.Lock()
+// // 		pp.Println( "likes", likes,"setLike ++", i)
+// // 		likes++
+// // 		mtx.Unlock()
+// // //! Go планировщик решает, какая горутина следующей возьмёт мьютекс.
+// // 	}
+// // }
+// // func getLike(wg *sync.WaitGroup, name string){
+// // 	defer wg.Done()
 
-// 	for i:=1; i<=100; i++{
-// 		mtx.RLock()
-// 	    pp.Println("я взял выполнение мьютекса", name, likes)
-// 		// _=likes
-// 		mtx.RUnlock()
-// 	}
-// }
+// // 	for i:=1; i<=100; i++{
+// // 		mtx.RLock()
+// // 	    pp.Println("я взял выполнение мьютекса", name, likes)
+// // 		// _=likes
+// // 		mtx.RUnlock()
+// // 	}
+// // }
 
-// func postman_WaitGrop(text string, wg *sync.WaitGroup) {
-// 	defer wg.Done() //? Важно (счетчик) каждый раз уменьшает на 1
-// 	// когда func запущеная в горутине завершится, всегда в конце вызывается defer
-// 	for i := 1; i <= 3; i++ {
-// 		pp.Println("Я понес газету", text, i)
-// 		time.Sleep(250 * time.Millisecond)
-// 	}
-// }
+// // func postman_WaitGrop(text string, wg *sync.WaitGroup) {
+// // 	defer wg.Done() //? Важно (счетчик) каждый раз уменьшает на 1
+// // 	// когда func запущеная в горутине завершится, всегда в конце вызывается defer
+// // 	for i := 1; i <= 3; i++ {
+// // 		pp.Println("Я понес газету", text, i)
+// // 		time.Sleep(250 * time.Millisecond)
+// // 	}
+// // }
 
-// func foo(ctx context.Context) {
-// 	// в бесконечном цикле for будем следить отменен ли контекст или нет через select
-// 	for {
-// 		select {
-// 		case <-ctx.Done():
-// 			pp.Println("контекст удален")
-// 			return
-// 		default:
-// 			fmt.Println("foo")
-// 		}
-// 		time.Sleep(100 * time.Millisecond)
+// // func foo(ctx context.Context) {
+// // 	// в бесконечном цикле for будем следить отменен ли контекст или нет через select
+// // 	for {
+// // 		select {
+// // 		case <-ctx.Done():
+// // 			pp.Println("контекст удален")
+// // 			return
+// // 		default:
+// // 			fmt.Println("foo")
+// // 		}
+// // 		time.Sleep(100 * time.Millisecond)
 
-// 	}
+// // 	}
 
-// }
+// // }
 
 package main
 
@@ -280,46 +280,49 @@ import (
 	"study/miner"
 	"sync"
 	"time"
-
-	"github.com/k0kubun/pp"
 )
 func main(){
-	// -race детект состояние гонки
 var resCoal int
-minerCotext, minecrCancel := context.WithCancel(context.Background())
+minerCotext, minerCancel := context.WithCancel(context.Background())
 coalTransferPoint := miner.MinerPool(minerCotext, 1)
-
 var mtx = sync.Mutex{}
 var wg = &sync.WaitGroup{}
 
-go func(){
-	time.Sleep(3 * time.Second)
-	minecrCancel()
-}()
+
+	// Засекаем время выполнения всей работы
+	initTime := time.Now()
 
 wg.Add(1)
 go func(){
 	defer wg.Done()
 
 	for val:= range coalTransferPoint {
-	pp.Println("Количество угля в складе", val)
+	fmt.Printf("взяли %v угля со склада \n", val)
 
 	// состояние гонки (Блокируем для 1 go-рутины)
 	mtx.Lock()
 	fmt.Println("lock ->>>")
 	resCoal += val
-	mtx.Unlock()	
+	mtx.Unlock()
 }
 }()
 
-go func(){
-	for{
-	time.Sleep(1 * time.Second)
-	fmt.Println("read: ->>>", resCoal)
-	}
+
+// Через 3 секунды мы завершим рабочий день шахтёров
+go func() {
+	time.Sleep(3 * time.Second)
+	fmt.Println("--->>> Рабочий день шахтёров окончен!")
+	minerCancel()
 }()
 
+
+
 wg.Wait()
+
+
+// Далее выводим результирующие значения
+fmt.Println("Суммарно добытый уголь:", resCoal)
+fmt.Println("Затраченное время:", time.Since(initTime))
 
 // var isCoalClose bool = false
 
@@ -334,8 +337,111 @@ wg.Wait()
 
 // 	}
 // }
-
-
-minecrCancel()
-fmt.Println("Общее количество угля", resCoal)
 }
+
+// package main
+
+// import (
+// 	"encoding/json"
+// 	"fmt"
+// 	"net/http"
+// )
+// type HttpResponse struct {
+// 	Status string      `json:"status"`
+// 	Data   interface{} `json:"data,omitempty"`
+// 	Error  string      `json:"error,omitempty"`
+// }
+// type Payment struct {
+// 	Desc string `json:"desc"`
+// 	Usd int `json:"usd"`
+// 	FullName string `json:"fullName"`
+// }
+// // метод класса
+// func (p Payment) Println() {
+// 	fmt.Println(p.Desc, p.Usd, p.FullName)
+// }
+
+// var money = 10000
+// var paymentHistory = make([] Payment, 0)
+
+// func payHandler(w http.ResponseWriter, r *http.Request) {
+// 	var payment Payment
+
+// 	err := json.NewDecoder(r.Body).Decode(&payment)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		w.WriteHeader(http.StatusBadRequest)
+// 		json.NewEncoder(w).Encode(map[string]string{
+// 			"error": "Некорректный JSON: " + err.Error(),
+// 		})
+// 		return
+// 	}
+
+// 	payment.Println()
+
+// 	if payment.Usd > money {
+// 		fmt.Println("Недостаточно средств")
+// 		w.WriteHeader(http.StatusBadRequest)
+// 		return
+// 	}
+// 	money -= payment.Usd
+
+// 	paymentHistory = append(paymentHistory, payment)
+
+// 	// resp_JSON := HttpResponse{
+// 	// Status: "success",
+// 	// Data:   payment,
+// 	// }
+
+// 	var resp = map[string]any{
+// 		"status": "success",
+// 		"data":   payment,
+// 	}
+    
+// 	var ok, status = resp["status"]
+// 	if(!status){
+// 		fmt.Println("Поля не существует", ok)
+// 	}
+
+
+
+// 	jsonStr := `{"name":"Ivan","age":25}`
+// 	fmt.Println(jsonStr)
+	
+// 	var u map[string]any
+// 	err = json.Unmarshal([]byte(jsonStr), &u)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+
+// 	fmt.Println(u["name"]) // Ivan
+// 	fmt.Println(u["age"])  // 25 (но будет float64)
+
+// 	jsonBytes, err := json.Marshal(u)
+// 		if err != nil {
+// 		panic(err)
+// 	}
+
+// 	jsonStr = string(jsonBytes)
+// 	fmt.Println(jsonStr)
+
+	
+// 	// Устанавливаем Content-Type JSON
+// 	w.Header().Set("Content-Type", "application/json")
+// 	w.WriteHeader(http.StatusOK)
+// 	// Возвращаем JSON, аналог res.json({})
+// 	json.NewEncoder(w).Encode(paymentHistory)
+// 	// w.Write([]byte("Привет, мир!")) - типо res.send              
+// }
+
+
+
+// func main() {
+// 	http.HandleFunc("/", payHandler)
+
+// 	fmt.Println("Сервер запущен на http://localhost:8080")
+// 	err := http.ListenAndServe(":8080", nil)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// }

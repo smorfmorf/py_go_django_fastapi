@@ -9,6 +9,7 @@ import (
 	"github.com/k0kubun/pp"
 )
 
+
 func Miner(
 	ctx context.Context, //context
 	wg *sync.WaitGroup,  // await 
@@ -35,11 +36,12 @@ func Miner(
 
 // пункт передачи  хотим только читать <-
 func MinerPool(ctx context.Context, minerCount int) <-chan int{
-	coalTransferPoint := make(chan int) // пункт передачи 
+	coalTransferPoint := make(chan int) // канал передачи угля
 	wg := &sync.WaitGroup{} // чтобы подождать всех Mineroв
 
 	for i:=1; i<=minerCount; i++{
 		wg.Add(1)
+		// Функция, описывающая работу одного отдельного шахтёра
 		go Miner(ctx, wg, coalTransferPoint, i, i*10)
 	}
 
@@ -52,6 +54,5 @@ func MinerPool(ctx context.Context, minerCount int) <-chan int{
 	}()
 
 
-	// канал передачи угля
 	return coalTransferPoint
 }
